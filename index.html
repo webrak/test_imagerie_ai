@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Analyse d'image médicale</title>
+</head>
+<body>
+
+  <!-- Section pour afficher l'image médicale -->
+  <div>
+    <h2>Image médicale</h2>
+    <!-- Remplace l'URL ci-dessous par l'URL de l'image que tu veux afficher -->
+    <img src="./image_illustration_AI.jpg" alt="Analyse radiologique" style="max-width: 500px;"/>
+  </div>
+
+  <!-- Section pour afficher le compte-rendu généré par ChatGPT -->
+  <div id="rapport-container">
+    <h2>Compte-rendu</h2>
+    <!-- Insère ici le HTML généré par ChatGPT via ton prompt radiologique.
+         Exemple :
+         <section>
+           <h3>EXAMEN</h3>
+           <p>Scanner cérébral...</p>
+         </section>
+         <section>
+           <h3>TECHNIQUE</h3>
+           <p>Coupe axiale...</p>
+         </section>
+         ...
+    -->
+  </div>
+
+  <!-- Formulaire pour la note et le commentaire -->
+  <div>
+    <h2>Évaluation par le médecin</h2>
+    <form id="evaluation-form">
+      <label for="note">Note (1 à 10) :</label>
+      <input type="number" id="note" name="note" min="1" max="10" required />
+      <br/><br/>
+
+      <label for="commentaire">Commentaire :</label>
+      <textarea id="commentaire" name="commentaire" rows="4" cols="50" required></textarea>
+      <br/><br/>
+
+      <button type="submit">Envoyer</button>
+    </form>
+
+    <div id="messageRetour" style="margin-top:1em; font-weight:bold;"></div>
+  </div>
+
+  <!-- Script JavaScript pour gérer l'enregistrement dans Supabase -->
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+    // 1. Remplace par tes propres identifiants Supabase
+    const supabaseUrl = 'https://lcrkjeigcywckwcesprv.supabase.co'         // Exemple: 'https://xxxxxx.supabase.co'
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcmtqZWlnY3l3Y2t3Y2VzcHJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1MzQ2MDEsImV4cCI6MjA1NzExMDYwMX0.tWABoguDVY08k2oIdiN7aIC4XTb2_T0BUkL4kaUOs68' // Exemple: 'eyJhbGc...'
+    const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+    // 2. Sélectionne le formulaire et la zone de message
+    const form = document.getElementById('evaluation-form')
+    const messageRetour = document.getElementById('messageRetour')
+
+    // 3. Écoute l'événement de soumission du formulaire
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+
+      // a) Récupère les valeurs saisies
+      const noteValue = document.getElementById('note').value
+      const commentaireValue = document.getElementById('commentaire').value
+
+      // b) Récupère le rapport HTML (si tu souhaites l'enregistrer tel quel)
+      const rapportHTML = document.getElementById('rapport-container').innerHTML
+
+      // c) l'URL de l'image (si tu veux la stocker, sinon tu peux l'omettre)
+      const imageUrl = "https://example.com/mon_image_medicale.jpg"
+
+      try {
+        // d) Insère dans la table "evaluations"
+        const { data, error } = await supabase
+          .from('evaluations')
+          .insert([
+            {
+              image_url: imageUrl,
+              rapport: rapportHTML,
+              note: noteValue,
+              commentaire: commentaireValue
+            }
+          ])
+
+        if (error) {
+          console.error(error)
+          messageRetour.innerText = 'Erreur lors de l’enregistrement : ' + error.message
+        } else {
+          messageRetour.innerText = 'Évaluation enregistrée avec succès !'
+          // on peut vider le formulaire si on veut
+          form.reset()
+        }
+      } catch (err) {
+        console.error(err)
+        messageRetour.innerText = 'Erreur inattendue'
+      }
+    })
+  </script>
+</body>
+</html>

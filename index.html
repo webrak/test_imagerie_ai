@@ -28,86 +28,112 @@
   <title>Analyse d'image médicale</title>
 </head>
 <body>
-
-  <!-- Section pour afficher l'image médicale -->
-  <div>
-    <h2>Image médicale</h2>
-    <!-- Remplace l'URL ci-dessous par l'URL de l'image que tu veux afficher -->
-    <img src="./image_illustration_AI.jpg" alt="Analyse radiologique" style="max-width: 500px;"/>
+<body>
+  <div class="container">
+    <h1 class="text-center mb-4">Analyse d'Image Médicale</h1>
+    
+    <!-- Section pour afficher l'image médicale -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h2 class="card-title mb-0">Image médicale</h2>
+      </div>
+      <div class="card-body text-center">
+        <img src="./image_illustration_AI.jpg" alt="Analyse radiologique" class="img-fluid rounded" style="max-width: 500px;"/>
+      </div>
+    </div>
+    
+    <!-- Section pour afficher le compte-rendu généré par ChatGPT -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h2 class="card-title mb-0">Compte-rendu</h2>
+      </div>
+      <div class="card-body" id="rapport-container">
+        <section>
+          <h3 class="text-secondary">EXAMEN</h3>
+          <p>Scanner cérébral sans injection de produit de contraste</p>
+        </section>
+        <section>
+          <h3 class="text-secondary">TECHNIQUE</h3>
+          <p>Acquisition hélicoïdale, coupes axiales, reconstructions multiplanaires</p>
+        </section>
+        <section>
+          <h3 class="text-secondary">RÉSULTATS</h3>
+          <p>Absence d'anomalie parenchymateuse. Structures médianes en place. Ventricules de taille normale. Absence d'hémorragie intracrânienne.</p>
+        </section>
+        <section>
+          <h3 class="text-secondary">CONCLUSION</h3>
+          <p>Examen dans les limites de la normale.</p>
+        </section>
+      </div>
+    </div>
+    
+    <!-- Formulaire pour la note et le commentaire -->
+    <div class="card mb-4">
+      <div class="card-header bg-primary text-white">
+        <h2 class="card-title mb-0">Évaluation par le médecin</h2>
+      </div>
+      <div class="card-body">
+        <form id="evaluation-form" class="needs-validation" novalidate>
+          <div class="mb-3">
+            <label for="note" class="form-label">Note (1 à 10) :</label>
+            <input type="number" class="form-control" id="note" name="note" min="1" max="10" required />
+            <div class="invalid-feedback">Veuillez entrer une note entre 1 et 10.</div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="commentaire" class="form-label">Commentaire :</label>
+            <textarea class="form-control" id="commentaire" name="commentaire" rows="4" required></textarea>
+            <div class="invalid-feedback">Veuillez entrer un commentaire.</div>
+          </div>
+          
+          <button type="submit" class="btn btn-primary">Envoyer</button>
+        </form>
+        
+        <div id="messageRetour" class="alert mt-3" style="display: none;"></div>
+      </div>
+    </div>
   </div>
-
-  <!-- Section pour afficher le compte-rendu généré par ChatGPT -->
-  <div id="rapport-container">
-   <div id="rapport-container">
-  <h2>Compte-rendu</h2>
-  <section>
-    <h3>EXAMEN</h3>
-    <p>Scanner cérébral sans injection de produit de contraste</p>
-  </section>
-  <section>
-    <h3>TECHNIQUE</h3>
-    <p>Acquisition hélicoïdale, coupes axiales, reconstructions multiplanaires</p>
-  </section>
-  <section>
-    <h3>RÉSULTATS</h3>
-    <p>Absence d'anomalie parenchymateuse. Structures médianes en place. Ventricules de taille normale. Absence d'hémorragie intracrânienne.</p>
-  </section>
-  <section>
-    <h3>CONCLUSION</h3>
-    <p>Examen dans les limites de la normale.</p>
-  </section>
-</div>
-         ...
-    -->
-  </div>
-
-  <!-- Formulaire pour la note et le commentaire -->
-  <div>
-    <h2>Évaluation par le médecin</h2>
-    <form id="evaluation-form">
-      <label for="note">Note (1 à 10) :</label>
-      <input type="number" id="note" name="note" min="1" max="10" required />
-      <br/><br/>
-
-      <label for="commentaire">Commentaire :</label>
-      <textarea id="commentaire" name="commentaire" rows="4" cols="50" required></textarea>
-      <br/><br/>
-
-      <button type="submit">Envoyer</button>
-    </form>
-
-    <div id="messageRetour" style="margin-top:1em; font-weight:bold;"></div>
-  </div>
-
+  
   <!-- Script JavaScript pour gérer l'enregistrement dans Supabase -->
   <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-
+    
     // 1. Remplace par tes propres identifiants Supabase
-    const supabaseUrl = 'https://lcrkjeigcywckwcesprv.supabase.co'         // Exemple: 'https://xxxxxx.supabase.co'
-    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcmtqZWlnY3l3Y2t3Y2VzcHJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1MzQ2MDEsImV4cCI6MjA1NzExMDYwMX0.tWABoguDVY08k2oIdiN7aIC4XTb2_T0BUkL4kaUOs68' // Exemple: 'eyJhbGc...'
+    const supabaseUrl = 'https://lcrkjeigcywckwcesprv.supabase.co'
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxjcmtqZWlnY3l3Y2t3Y2VzcHJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1MzQ2MDEsImV4cCI6MjA1NzExMDYwMX0.tWABoguDVY08k2oIdiN7aIC4XTb2_T0BUkL4kaUOs68'
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
-
+    
     // 2. Sélectionne le formulaire et la zone de message
     const form = document.getElementById('evaluation-form')
     const messageRetour = document.getElementById('messageRetour')
-
-    // 3. Écoute l'événement de soumission du formulaire
+    
+    // 3. Ajoute la validation du formulaire
     form.addEventListener('submit', async (e) => {
       e.preventDefault()
-
+      
+      if (!form.checkValidity()) {
+        e.stopPropagation()
+        form.classList.add('was-validated')
+        return
+      }
+      
       // a) Récupère les valeurs saisies
       const noteValue = document.getElementById('note').value
       const commentaireValue = document.getElementById('commentaire').value
-
-      // b) Récupère le rapport HTML (si tu souhaites l'enregistrer tel quel)
+      
+      // b) Récupère le rapport HTML
       const rapportHTML = document.getElementById('rapport-container').innerHTML
-
-      // c) l'URL de l'image (si tu veux la stocker, sinon tu peux l'omettre)
-      const imageUrl = "https://example.com/mon_image_medicale.jpg"
-
+      
+      // c) l'URL de l'image
+      const imageUrl = "./image_illustration_AI.jpg"
+      
+      // d) Affiche un message de chargement
+      messageRetour.innerHTML = 'Envoi en cours...'
+      messageRetour.className = 'alert alert-info mt-3'
+      messageRetour.style.display = 'block'
+      
       try {
-        // d) Insère dans la table "evaluations"
+        // e) Insère dans la table "evaluations"
         const { data, error } = await supabase
           .from('evaluations')
           .insert([
@@ -118,20 +144,28 @@
               commentaire: commentaireValue
             }
           ])
-
+        
         if (error) {
           console.error(error)
-          messageRetour.innerText = 'Erreur lors de l’enregistrement : ' + error.message
+          messageRetour.innerHTML = 'Erreur lors de l\'enregistrement : ' + error.message
+          messageRetour.className = 'alert alert-danger mt-3'
         } else {
-          messageRetour.innerText = 'Évaluation enregistrée avec succès !'
-          // on peut vider le formulaire si on veut
+          messageRetour.innerHTML = 'Évaluation enregistrée avec succès !'
+          messageRetour.className = 'alert alert-success mt-3'
           form.reset()
+          form.classList.remove('was-validated')
         }
       } catch (err) {
         console.error(err)
-        messageRetour.innerText = 'Erreur inattendue'
+        messageRetour.innerHTML = 'Erreur inattendue'
+        messageRetour.className = 'alert alert-danger mt-3'
       }
     })
   </script>
+  
+  <!-- Script Bootstrap -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+ 
 </body>
 </html>
